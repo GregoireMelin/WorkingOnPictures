@@ -19,44 +19,110 @@ void process(const char* imsname)
   else
   {
     Mat image = imread(imsname,1);
+    Mat imageF;
+    image.convertTo(imageF, CV_32FC1);
+
     Mat imageResized;
 
     if(image.empty())
       cout<<"Image vide"<<endl;
     else
+      resize(imageF,imageResized,Size(),2,2);
+      imageResized.convertTo(imageResized, CV_32FC1);
+      //AT
+      Vec3f intensity;
+      Mat MethAt = imageResized.clone();
+      float blue;
+      float green;
+      float red;
+      e1=(double)getTickCount();
+	      for ( int j = 0; j < imageResized.rows; ++j)
+       	      {
+		      for ( int i = 0; i < imageResized.cols; ++i)
+	              {
+		                  intensity=MethAt.at<Vec3f>(j, i);
+                      blue = intensity.val[0];
+                      green = intensity.val[1];
+                      red = intensity.val[2];
 
-      resize(image,imageResized,Size(),80,80);
+                      blue = 1/64 * blue * 64 + 64/2;
+                      green = 1/64 * green * 64 + 64/2;
+                      red = 1/64 * red * 64 + 64/2;
 
+                      intensity.val[0] = blue;
+                      intensity.val[1] = green;
+                      intensity.val[2] = red;
 
-      // Methode at
-  /*    e1=(double)getTickCount();
-	     for ( int j = 0; j < imageResized.rows; ++j)
-       {
-		     for ( int i = 0; i < imageResized.cols; ++i)
-	        {
-		          Vec3b * pixel = &imageResized.at<Vec3b>(j, i);
-		          op(&(*pixel)[0]);
-              op(&(*pixel)[1]);
-              op(&(*pixel)[2]);
-	        }
-        }
+                      MethAt.at<Vec3f>(j, i) = intensity;
+	              }
+              }
       e2=(double)getTickCount();
       period = (e2 - e1)/getTickFrequency();
 
-      cout << period <<endl;
+      cout<<"Temps methode at: "<< period <<endl;
 
-	// iterator
-	t = (double)(getTickCount());
-	Mat_<Vec3b>::iterator it, end;
-	for (it = img_out2.begin<Vec3b>(), end = img_out2.end<Vec3b>(); it != end; ++it)
-	{
-		op(&(*it)[0]);
-		op(&(*it)[1]);
-		op(&(*it)[2]);
-	}
-	t = ((double)getTickCount() - t)/getTickFrequency();
-	cout<<"Time with iterator: " << t*1000 << "ms" <<endl;*/
-}
+      //Operateur matrices
+      Mat MethOpMat = imageResized.clone();
+
+
+
+      e1=(double)getTickCount();
+
+      MethOpMat = 1/64 * MethOpMat * 64 + 64/2;
+
+      e2=(double)getTickCount();
+      period = (e2 - e1)/getTickFrequency();
+
+      cout<<"Temps methode operateur matriciel: "<< period <<endl;
+
+      //Methode Iterateur
+      Mat MethIt = imageResized.clone();
+      Mat_<Vec3f>::iterator it, end;
+
+      e1=(double)getTickCount();
+      for (it = MethIt.begin<Vec3f>(), end = MethIt.end<Vec3f>(); it != end; ++it)
+      {
+        blue = (*it)[0];
+        green = (*it)[1];
+        red = (*it)[2];
+
+        (*it)[0] = 1/64* blue * 64+64/2; //je prend la valeur associe au pointeur
+        (*it)[1] = 1/64* green * 64+64/2;
+        (*it)[2] = 1/64* red * 64+64/2;
+      }
+      e2=(double)getTickCount();
+      period = (e2 - e1)/getTickFrequency();
+
+      cout<<"Temps methode iterateur: "<< period <<endl;
+
+      //Methode Pointeur
+      Mat MethP = imageResized.clone();
+
+      e1=(double)getTickCount();
+
+      for ( int j = 0; j < imageResized.rows; ++j)
+            {
+              Vec3f * p = MethP.ptr<Vec3f>(j); //pointeur sur la ligne
+        for ( int i = 0; i < imageResized.cols; ++i)
+              {
+                blue = (p[i][0]);
+                green = (p[i][1]);
+                red = (p[i][2]);
+
+                (p[i][0]) = 1/64* blue * 64+64/2; //je prend la valeur associe au pointeur
+                (p[i][1]) = 1/64* green * 64+64/2;
+                (p[i][2]) = 1/64* red * 64+64/2;
+              }
+            }
+            e2=(double)getTickCount();
+            period = (e2 - e1)/getTickFrequency();
+
+            cout<<"Temps methode pointeur: "<< period <<endl;
+
+
+
+
+    }
 }
 
 void usage (const char *s)
