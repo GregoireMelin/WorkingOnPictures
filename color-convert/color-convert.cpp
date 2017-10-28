@@ -8,6 +8,7 @@ using namespace std;
 
 void process(const char* imsname)
 {
+
   if(imsname==NULL)
   {
     cout<<"Objet vide"<<endl;
@@ -15,28 +16,22 @@ void process(const char* imsname)
   }
   else
   {
-    Mat image0 = imread(imsname,CV_LOAD_IMAGE_COLOR);
-    Mat image;
-    Vec3b intensity;
-    Mat blueImage(image0.rows,image0.cols,CV_16UC3,Scalar(3));
-    Mat greenImage(image0.rows,image0.cols,CV_16UC3,Scalar(3));
-    Mat redImage(image0.rows,image0.cols,CV_16UC3,Scalar(3));
-    for ( int j = 0; j < image.rows; ++j)
-    {
-      for ( int i = 0; i < image.cols; ++i)
-              {
-                    blueImage.at<uchar>(j,i,0) = intensity.val[0];
-                    greenImage.at<uchar>(j,i,1) = intensity.val[1];
-                    redImage.at<uchar>(j,i,2) = intensity.val[2];
-              }
-            }
+    //Image source + destinations
+    Mat image = imread(imsname,1);
+    Mat BD(image.rows,image.cols,CV_8UC3);
+    Mat GD(image.rows,image.cols,CV_8UC3);
+    Mat RD(image.rows,image.cols,CV_8UC3);
 
-    namedWindow("blue",WINDOW_AUTOSIZE);
-    imshow("blue",blueImage);
-    namedWindow("green",WINDOW_AUTOSIZE);
-    imshow("green",greenImage);
-    namedWindow("red",WINDOW_AUTOSIZE);
-    imshow("red",redImage);
+    //Split de l'image
+    Mat channels[3];
+    split(image,channels);
+    Mat B = channels[0];
+    Mat G = channels[1];
+    Mat R = channels[2];
+
+    //Affichage
+    namedWindow("b",WINDOW_AUTOSIZE);namedWindow("g",WINDOW_AUTOSIZE);namedWindow("r",WINDOW_AUTOSIZE);
+    imshow("b",BD);imshow("g",GD);imshow("r",RD);
     waitKey(0);
   }
 }
