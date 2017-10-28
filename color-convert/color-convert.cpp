@@ -5,7 +5,6 @@
 using namespace cv;
 using namespace std;
 
-
 void process(const char* imsname)
 {
 
@@ -18,21 +17,46 @@ void process(const char* imsname)
   {
     //Image source + destinations
     Mat image = imread(imsname,1);
-    Mat BD(image.rows,image.cols,CV_8UC3);
-    Mat GD(image.rows,image.cols,CV_8UC3);
-    Mat RD(image.rows,image.cols,CV_8UC3);
+    vector<Mat> channels;
 
-    //Split de l'image
-    Mat channels[3];
-    split(image,channels);
-    Mat B = channels[0];
-    Mat G = channels[1];
-    Mat R = channels[2];
+    split(image, channels);
+    //Affichage de canaux RGB
+	  imshow("B", channels[0]);
+	  imshow("G", channels[1]);
+	  imshow("R", channels[2]);
 
-    //Affichage
-    namedWindow("b",WINDOW_AUTOSIZE);namedWindow("g",WINDOW_AUTOSIZE);namedWindow("r",WINDOW_AUTOSIZE);
-    imshow("b",BD);imshow("g",GD);imshow("r",RD);
-    waitKey(0);
+    //Conversion en niveaux de gris
+    Mat image_gray;
+    cvtColor(image, image_gray, cv::COLOR_BGR2GRAY);
+    imshow("RGBtoGray", image_gray);
+
+    //Conversion en YCbCbCr
+    Mat image_YCbCr;
+    cvtColor(image, image_YCbCr, COLOR_BGR2YCrCb);
+    vector<Mat> channels_YCbCr;
+    split(image_YCbCr, channels_YCbCr);
+
+    //Affichage des canaux YCbCr
+    imshow("Y", channels_YCbCr[0]);
+    imshow("Cb", channels_YCbCr[1]);
+    imshow("Cr", channels_YCbCr[2]);
+
+    //Conversion et affichage de l'image en YCbCr en RGB
+    Mat image_YCbCr2RGB;
+    cvtColor(image_YCbCr, image_YCbCr2RGB, cv::COLOR_YCrCb2BGR);
+    imshow("RGBtoYCbCrtoRGB", image_YCbCr2RGB);
+    imshow("original",image);
+
+    Mat GrayMinusY = image_gray - channels_YCbCr[0];
+    imshow("YmoinsGray", GrayMinusY);
+
+    Mat RGBMinusRGBconverted = image - image_YCbCr;
+    imshow("RGBmoinsRGBtoYCbCrtoRGB", RGBMinusRGBconverted);
+
+    cout<<"Type de la matrice image grise "<< image_gray.channels()<<" "<< image_gray.depth()<<endl;
+    cout<<"Type de la matrice Y "<< channels_YCbCr[0].channels()<<" "<< channels_YCbCr[0].depth()<<endl;
+    cout<<"Type de la matrice image: "<< image.channels()<<" "<< image.depth()<<endl;
+    cout<<"Type de la matrice RGB to YCbCr to RGB: "<<image_YCbCr2RGB.channels()<<" "<< image_YCbCr2RGB.depth()<<endl;
   }
 }
 
