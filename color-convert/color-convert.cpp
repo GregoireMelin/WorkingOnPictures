@@ -8,6 +8,7 @@ using namespace std;
 
 void process(const char* imsname)
 {
+
   if(imsname==NULL)
   {
     cout<<"Objet vide"<<endl;
@@ -15,13 +16,24 @@ void process(const char* imsname)
   }
   else
   {
-    //lecture de l'image
+    //Image source + destinations
     Mat image = imread(imsname,1);
-    
-    cout<<"color-convert"<<endl; //donne 1
+    Mat BD(image.rows,image.cols,CV_8UC3);
+    Mat GD(image.rows,image.cols,CV_8UC3);
+    Mat RD(image.rows,image.cols,CV_8UC3);
 
+    //Split de l'image
+    Mat channels[3];
+    split(image,channels);
+    Mat B = channels[0];
+    Mat G = channels[1];
+    Mat R = channels[2];
+
+    //Affichage
+    namedWindow("b",WINDOW_AUTOSIZE);namedWindow("g",WINDOW_AUTOSIZE);namedWindow("r",WINDOW_AUTOSIZE);
+    imshow("b",BD);imshow("g",GD);imshow("r",RD);
     waitKey(0);
-    }
+  }
 }
 
 void usage (const char *s)
