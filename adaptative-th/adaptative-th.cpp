@@ -121,8 +121,6 @@ void process(const char* ims,const int radius, const int constant)
 
     imwrite("th-ocv-gauss.png", th_gauss);
     imshow("gauss", th_gauss);
-
-    waitKey(0);
     }
 }
 
