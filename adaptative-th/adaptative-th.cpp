@@ -17,7 +17,7 @@ void process(const char* ims,const int radius, const int constant)
   {
     //lecture de l'image
     Mat image = imread(ims,0);
-    int surrounding = 2*radius+1; 
+    int surrounding = 2*radius+1;
 
     Mat th = image.clone();
     Mat matroi;
@@ -121,7 +121,7 @@ void process(const char* ims,const int radius, const int constant)
 
     imwrite("th-ocv-gauss.png", th_gauss);
     imshow("gauss", th_gauss);
-    waitKey(0);
+    //waitKey(0);
     }
 }
 
