@@ -15,13 +15,30 @@ void process(const char* imsname)
   }
   else
   {
-    //lecture de l'image
-    Mat image = imread(imsname,1);
-    
-    cout<<"color-convert"<<endl; //donne 1
+    Mat image0 = imread(imsname,CV_LOAD_IMAGE_COLOR);
+    Mat image;
+    Vec3b intensity;
+    Mat blueImage(image0.rows,image0.cols,CV_16UC3,Scalar(3));
+    Mat greenImage(image0.rows,image0.cols,CV_16UC3,Scalar(3));
+    Mat redImage(image0.rows,image0.cols,CV_16UC3,Scalar(3));
+    for ( int j = 0; j < image.rows; ++j)
+    {
+      for ( int i = 0; i < image.cols; ++i)
+              {
+                    blueImage.at<uchar>(j,i,0) = intensity.val[0];
+                    greenImage.at<uchar>(j,i,1) = intensity.val[1];
+                    redImage.at<uchar>(j,i,2) = intensity.val[2];
+              }
+            }
 
+    namedWindow("blue",WINDOW_AUTOSIZE);
+    imshow("blue",blueImage);
+    namedWindow("green",WINDOW_AUTOSIZE);
+    imshow("green",greenImage);
+    namedWindow("red",WINDOW_AUTOSIZE);
+    imshow("red",redImage);
     waitKey(0);
-    }
+  }
 }
 
 void usage (const char *s)
