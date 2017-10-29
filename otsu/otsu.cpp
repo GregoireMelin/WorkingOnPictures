@@ -1,28 +1,34 @@
 #include <iostream>
 #include <cstdlib>
 #include "opencv2/opencv.hpp"
-
 using namespace cv;
 using namespace std;
 
 float intensity;
 float thresholdOtsu;
 
-
 Mat makeHist(Mat image)
 {
-/* for ( int j = 0; j < image.rows; ++j)
-  {
-    for ( int i = 0; i < image.cols; ++i)
-    {
-      intensity=image.at<float>(j, i);
-      valHist.at<float>(intensity)+=1;
-    }
-  }
-  cout<<"entered"<<endl;
+   Mat valHist = Mat::zeros(1,256, CV_32F);
+   int intensity;
+   for ( int j = 0; j < image.rows; ++j)
+   {
+       for ( int i = 0; i < image.cols; ++i)
+       {
+         intensity = (float)image.at<uchar>(j, i);
+         valHist.at<float>(intensity) = valHist.at<float>(intensity)+1;
+       }
 
-  //Mat valHist;
-  //return valHist;*/
+   }
+   return valHist;
+}
+
+Mat makeHistNorm(Mat image)
+{
+   Mat hist;
+   hist=makeHist(image);
+   hist=hist/(image.rows*image.cols);
+   return hist;
 }
 
 void process(const char* imsname)
@@ -39,16 +45,18 @@ void process(const char* imsname)
     Mat hist;
     //cout<<image.channels()<<endl; //donne 1
 
+    Mat histFunction;
+    histFunction=makeHistNorm(image);
+    float sum=0;
+    for( int h = 0; h < 256; h++ )
+     {
 
-
-
-
-
-
-
-
-
-    /*for ( int j = 0; j < image.rows; ++j)
+         float binVal = histFunction.at<float>(h);
+         sum=sum+binVal;
+         cout<<" "<<binVal<<endl;;
+     }
+     cout << sum <<endl;
+         /*for ( int j = 0; j < image.rows; ++j)
        {
 		      for ( int i = 0; i < image.cols; ++i)
               {
@@ -63,9 +71,6 @@ void process(const char* imsname)
                   }
               }
         }
-
-
-
 
         //imwrite("otsu-th.png",otsu_th);
 
@@ -93,7 +98,7 @@ void process(const char* imsname)
         imshow("((otsu-th.png) - (otsu-th-ocv.png))",otsu_th_ocv);*/
 
         // Initialisation parametre
-        int histSize = 256;    // bin size
+        /*int histSize = 256;    // bin size
         float range[] = { 0, 255 };
         const float *ranges[] = { range };
 
@@ -112,8 +117,6 @@ void process(const char* imsname)
           cout<<"End first histo"<<endl;
           cout<<"taille is: "<<image.rows*image.cols<<endl;
 
-
-
           int sum;
            Mat valHist = Mat::zeros(1,256, CV_32F);
            int intensity;
@@ -130,19 +133,12 @@ void process(const char* imsname)
              cout<<"Hist emperic"<<endl;
              cout<<"somme is: "<< sum<< endl;
 
-
-
            for( int h = 0; h < 256; h++ )
             {
                 float binVal = valHist.at<float>(h);
                 cout<<" "<<binVal;
             }
-
-            cout<<"last "<< valHist.at<float>(255)<<endl;
-
-
-
-
+            cout<<"last "<< valHist.at<float>(255)<<endl;*/
            waitKey(0);
     }
 }
