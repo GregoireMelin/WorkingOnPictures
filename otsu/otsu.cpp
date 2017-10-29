@@ -157,13 +157,13 @@ void process(const char* imsname)
 
     Mat th = ThresholdPic(image,thr);
 
-    imwrite("otsu.png", th);
-    imshow("otsu.png",th);
+    imwrite("otsu-th.png", th);
+    imshow("otsu-th.png",th);
 
     Mat diff = th - otsu_th_ocv;
     imshow("diff",diff);
 
-  //  waitKey(0);
+    //waitKey(0);
     }
 }
 
