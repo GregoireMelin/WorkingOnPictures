@@ -53,8 +53,10 @@ void process(const char* imsname)
 
          float binVal = histFunction.at<float>(h);
          sum=sum+binVal;
-         cout<<" "<<binVal<<endl;;
+         cout<<" "<<binVal;
      }
+     cout << " "<<endl;
+     cout << "LA somme des probabilites est : "<<endl;
      cout << sum <<endl;
          /*for ( int j = 0; j < image.rows; ++j)
        {
