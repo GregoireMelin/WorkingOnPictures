@@ -107,7 +107,6 @@ void process(const char* ims,const int radius, const int constant)
 
     imwrite("th-ocv-mean.png", th_mean);
     imshow("original",image);
-
     imshow("th-ocv-mean", th_mean);
 
     //Calcul de la difference entre les deux pecedentes images seuillees

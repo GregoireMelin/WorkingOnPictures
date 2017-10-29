@@ -67,7 +67,7 @@ void process(const int h,const int s,const int v, const char* ims,const char* im
     imwrite(imd, image_modified);
     namedWindow(imd,WINDOW_AUTOSIZE);
     imshow(imd,image_modified);
-    waitKey(0);
+    //waitKey(0);
     }
 }
 
