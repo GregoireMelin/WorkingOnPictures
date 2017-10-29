@@ -5,6 +5,31 @@
 using namespace cv;
 using namespace std;
 
+Mat makeHist(Mat image)
+{
+   Mat valHist = Mat::zeros(1,256, CV_32F);
+   int intensity;
+   for ( int j = 0; j < image.rows; ++j)
+   {
+       for ( int i = 0; i < image.cols; ++i)
+       {
+         intensity = (float)image.at<uchar>(j, i);
+         valHist.at<float>(intensity) = valHist.at<float>(intensity)+1;
+       }
+   }
+   return valHist;
+}
+
+Mat makeHistNorm(Mat image)
+{
+   Mat hist;
+   hist=makeHist(image);
+   /*for ( int i = 0; i < hist.rows; ++i)
+   {
+     hist.at<float>(i) = hist.at<float>(i);
+   }*/
+   return hist;
+}
 
 void process(const char* imsname)
 {
@@ -16,28 +41,19 @@ void process(const char* imsname)
   else
   {
     //lecture de l'image
-    Mat image = imread(imsname,0);
-    Mat valHist = Mat::zeros(1,256, CV_32F);
-    Mat valHistNorm = Mat::zeros(1,256, CV_32F);
-    Mat valHistCumul = Mat::zeros(1,256, CV_32F);
+    Mat image=imread(imsname,0);
+    Mat valHist=makeHist(image);
+    Mat valHistNorm=makeHistNorm(image);
+    //Mat valHistCumul;
 
-    int intensity;
-    float sum=0;
-    for ( int j = 0; j < image.rows; ++j)
-       {
-         for ( int i = 0; i < image.cols; ++i)
-         {
-           intensity = (float)image.at<uchar>(j, i);
-           valHist.at<float>(intensity) = valHist.at<float>(intensity)+1;
-           sum=sum+valHist.at<float>(intensity);
-           valHistNorm.at<float>(intensity)= valHist.at<float>(intensity)/(image.rows*image.cols);
-           //cout<< "Non Norm. = "<<valHist.at<float>(intensity)<<" ,Norm = "<<valHistNorm.at<float>(intensity)<<endl;
-           valHistCumul.at<float>(intensity)=valHist.at<float>(intensity)+sum;
-           cout<<"non Cumul. ="<<valHist.at<float>(intensity)<<" ,Cumul = "<<valHistCumul.at<float>(intensity)<<endl;
-         }
-       }
 
-    waitKey(0);
+    for ( int i = 0; i < image.cols; ++i)
+    {
+           cout<<"HN : "<<valHist.at<int>(i)<<" "<<endl;;
+           //cout<<"HNo : "<<valHistNorm.at<double>(i)<<endl;
+
+    }
+    //waitKey(0);
     }
 }
 
