@@ -106,7 +106,7 @@ void process(const char* imsname)
     imshow("diff.png",diff);
 
     imshow("eq-ex",image);
-    //waitKey(0);
+    waitKey(0);
     }
 }
 
