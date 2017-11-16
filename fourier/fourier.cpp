@@ -19,34 +19,29 @@ void process(const char* ims, double freq)
   {
        image=imread(ims,0);
 
-        //Optimisation taille image via zero padding
+       //Optimisation taille image via zero padding
        Mat imageZeroPadded;
        int m = getOptimalDFTSize( image.rows );
        int n = getOptimalDFTSize( image.cols );
        copyMakeBorder(image, imageZeroPadded, 0, m - image.rows, 0, n - image.cols, BORDER_CONSTANT, Scalar::all(0));
+
        Mat planes[] = {Mat_<float>(imageZeroPadded), Mat::zeros(imageZeroPadded.size(), CV_32F)};
-       //Creation du plan complexe
        Mat complexI;
        merge(planes, 2, complexI);
        dft(complexI, complexI);
-
-       //Calcul Gain + passage en log
        split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
-       magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
-       phase(planes[0], planes[1], planes[1]);
-       Mat magI = planes[0];
-       Mat phaseI=planes[1];
-       magI += Scalar::all(1);
-       log(magI, magI);
-       log(phaseI,phaseI);
+       Mat magI,phaseI;
+       cartToPolar(planes[0],planes[1],magI,phaseI,true);
 
+
+//CALCUL GAIN
+       //Passage en log
+       log(magI, magI);
        //Crop le spectre pour qu'il ait un nombre pair de colonnes
        magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
-
-
        int cx = magI.cols/2;
        int cy = magI.rows/2;
-
+       //Recentrage
        Mat q0(magI, Rect(0, 0, cx, cy));
        Mat q1(magI, Rect(cx, 0, cx, cy));
        Mat q2(magI, Rect(0, cy, cx, cy));
@@ -60,14 +55,39 @@ void process(const char* ims, double freq)
        q1.copyTo(tmp);
        q2.copyTo(q1);
        tmp.copyTo(q2);
-
        //transforme en matrice lisible
        normalize(magI, magI, 0, 1, NORM_MINMAX);
 
+//CALCUL PHASE
+      //Passage en log
+      log(phaseI, phaseI);
+      //Crop le spectre pour qu'il ait un nombre pair de colonnes
+      phaseI = phaseI(Rect(0, 0, phaseI.cols & -2, phaseI.rows & -2));
+      int cxx = phaseI.cols/2;
+      int cyy = phaseI.rows/2;
+      //Recentrage
+      Mat q4(phaseI, Rect(0, 0, cxx, cyy));
+      Mat q5(phaseI, Rect(cxx, 0, cxx, cyy));
+      Mat q6(phaseI, Rect(0, cyy, cxx, cyy));
+      Mat q7(phaseI, Rect(cxx, cyy, cxx, cyy));
 
+      Mat tmp2;
+      q4.copyTo(tmp2);
+      q7.copyTo(q4);
+      tmp.copyTo(q7);
+
+      q5.copyTo(tmp2);
+      q6.copyTo(q5);
+      tmp.copyTo(q6);
+
+      //transforme en matrice lisible
+      normalize(phaseI, phaseI, 0, 1, NORM_MINMAX);
+
+//AFFICHAGES ET ENREGISTREMENT
        imshow(ims,image);
        imwrite("magnitude.png", magI);
        imwrite("phase.png",phaseI);
+
        imshow("spectrum magnitude", magI);
        imshow("spectrum phase",phaseI);
        waitKey(0);
