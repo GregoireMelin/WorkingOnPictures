@@ -29,7 +29,7 @@ void tricroissant( int tab[], int tab_size)
   tmp = tab[0];
   for(i = 0; i < tab_size; i++)
     tab[i] = tab[i+1];
-  tab[tab_size-1] = tmp;
+tab[tab_size-1] = tmp;
 }
 
 void process(const int r,const char* ims, const char* imd)
@@ -52,7 +52,6 @@ void process(const int r,const char* ims, const char* imd)
       cout<<"Image vide"<<endl;
     else
     {
-      int fenetre[(2*r+1)*(2*r+1)];
        for ( int j = 0; j < image.rows; ++j)
        {
           for ( int i = 0; i < image.cols; ++i)
@@ -98,29 +97,37 @@ void process(const int r,const char* ims, const char* imd)
 
                int q=0;
                matroi = image(Rect(x,y,l,w));
+               int size = l*w;
+               int tab[size];
 
-               for(int n=0;i<l;n++)
+               for(int n=0;n<l;n++)
                {
-                 for(int p=0;j<w;p++)
+                 for(int p=0;p<w;p++)
                  {
-                   //fenetre[q]= matroi.at<uchar>(n,p);
-                  cout<< fenetre[q]<<endl;
+                  tab[q]=(int)matroi.at<uchar>(n,p);
                   q++;
                  }
                }
 
-               tricroissant(fenetre, l*w);
+               tricroissant(tab, size);
 
-               medianBlurPicture.at<uchar>(j,i)=fenetre[2*r+1];
+               medianBlurPicture.at<uchar>(j,i)=tab[size/2];
              }
            }
         }
-      medianBlur(image,medianBlurPictureOCV,1);
-      imwrite(imd, medianBlurPicture);
-      namedWindow(imd,WINDOW_AUTOSIZE);
-      imshow(imd,medianBlurPicture);
+        //ecriture et affichage de l'image generee "a la main"
+        imwrite(imd, medianBlurPicture);
+        namedWindow(imd,WINDOW_AUTOSIZE);
+        imshow(imd,medianBlurPicture);
+
+        //creation et affichage de l'image generee par la methode de opencv
+      medianBlur(image,medianBlurPictureOCV, 2*r+1);
       namedWindow("OPEN CV : Median Blur",WINDOW_AUTOSIZE);
       imshow("OPEN CV : Median Blur",medianBlurPictureOCV);
+
+      imshow("Difference: Methode à la main - Methode OpenCV", medianBlurPicture - medianBlurPictureOCV);
+
+      //affichage de l'image original
       namedWindow(ims,WINDOW_AUTOSIZE);
       imshow(ims,image);
     }
