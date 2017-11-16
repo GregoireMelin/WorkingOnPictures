@@ -4,6 +4,7 @@
 
 using namespace cv;
 using namespace std;
+
 Mat image;
 
 void process(const char* ims, double freq)
@@ -17,11 +18,13 @@ void process(const char* ims, double freq)
     else
   {
        image=imread(ims,0);
-       //Optimisation taille image via zero padding
+
+        //Optimisation taille image via zero padding
        Mat imageZeroPadded;
        int m = getOptimalDFTSize( image.rows );
        int n = getOptimalDFTSize( image.cols );
-       copyMakeBorder(image, imageZeroPadded, 0, m - image.rows, 0, n - image.cols, BORDER_CONSTANT, Scalar::all(0));    Mat planes[] = {Mat_<float>(imageZeroPadded), Mat::zeros(imageZeroPadded.size(), CV_32F)};
+       copyMakeBorder(image, imageZeroPadded, 0, m - image.rows, 0, n - image.cols, BORDER_CONSTANT, Scalar::all(0));
+       Mat planes[] = {Mat_<float>(imageZeroPadded), Mat::zeros(imageZeroPadded.size(), CV_32F)};
        //Creation du plan complexe
        Mat complexI;
        merge(planes, 2, complexI);
@@ -35,6 +38,7 @@ void process(const char* ims, double freq)
        Mat phaseI=planes[1];
        magI += Scalar::all(1);
        log(magI, magI);
+       log(phaseI,phaseI);
 
        //Crop le spectre pour qu'il ait un nombre pair de colonnes
        magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
@@ -63,6 +67,7 @@ void process(const char* ims, double freq)
 
        imshow(ims,image);
        imwrite("magnitude.png", magI);
+       imwrite("phase.png",phaseI);
        imshow("spectrum magnitude", magI);
        imshow("spectrum phase",phaseI);
        waitKey(0);
