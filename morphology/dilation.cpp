@@ -9,10 +9,11 @@ using namespace std;
 void
 process(const char* sename, const char* imsname, const char* imdname)
 {
-  (void) sename;
-  (void) imsname;
-  (void) imdname;
-
+  Mat ims=imread(imsname,0);
+  Mat imd=Mat::zeros(ims.rows,ims.cols,CV_8UC1);
+  Mat se=imread(sename,0);
+  mm(se,ims,imd,maximum);
+  imwrite(imdname,imd);
 }
 
 void
