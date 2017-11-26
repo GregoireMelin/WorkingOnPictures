@@ -46,6 +46,8 @@ process(const char* imsname, const char* regname, const char* colorname)
 	Mat imd_eq;
 	equalizeHist(ims,imd_eq);
 	imwrite("cell-r.png",imd_eq);
+	regname="";
+	colorname="";
 
 	if(!ims.data){
 		cerr<<"Image not found, exit"<<endl;
