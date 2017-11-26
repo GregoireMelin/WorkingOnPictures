@@ -42,19 +42,21 @@ _add(int p, int r, int* roots)
 void
 process(const char* imsname, const char* regname, const char* colorname)
 {
-	Mat ims = imread(imsname);
-	Mat imd_eq;
-	equalizeHist(ims,imd_eq);
-	imwrite("cell-r.png",imd_eq);
-	regname="";
-	colorname="";
 
+	Mat ims = imread(imsname,0);
 	if(!ims.data){
 		cerr<<"Image not found, exit"<<endl;
 		exit(EXIT_FAILURE);
 	}
+        //cvtColor(ims, ims, CV_BGR2GRAY);
+	Mat imd_eq=ims.clone();
+	equalizeHist(ims,imd_eq);
 
-	cvtColor(ims, ims, CV_BGR2GRAY);
+	imwrite("cell-r.png",imd_eq);
+	imwrite(regname,ims);
+	imwrite(colorname,ims);
+
+
 
 	int* roots = new int[ims.total()];
 	int rows = ims.rows;
@@ -112,7 +114,7 @@ usage (const char *s)
 	exit(EXIT_FAILURE);
 }
 
-#define param 1
+#define param 3
 int
 main( int argc, char* argv[] )
 {
