@@ -2,13 +2,9 @@ ROOT=.
 CC=g++
 
 OCVLIB=-lopencv_core -lopencv_imgproc -lopencv_highgui
-ifeq ($(OCVENV), enseirb)
- CFLAGS  = -Wall -Wextra -Werror -I$(ROOT) -I/opt/opencv/include 
- LDFLAGS = -Wl,-R/opt/opencv/lib -L/opt/opencv/lib $(OCVLIB)
-else
- CFLAGS  = -Wall -Wextra -Werror -I$(ROOT)
- LDFLAGS = $(OCVLIB)
-endif
+
+CFLAGS  = -Wall -Wextra -Werror -I$(ROOT) -I/opt/opencv/include
+LDFLAGS = -Wl,-R/opt/opencv/lib -L/opt/opencv/lib $(OCVLIB)
 
 #modify data path or diplay command if applicable
 DATA=../data
@@ -18,6 +14,9 @@ OBJ = morphology.o
 BIN = \
 	make-se\
 	dilation\
+	erosion\
+	opening\
+	closing\
 	labeling
 
 all: $(OBJ) $(BIN)
