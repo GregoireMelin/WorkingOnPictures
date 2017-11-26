@@ -37,6 +37,8 @@ morphology.o: morphology.cpp morphology.hpp
 
 extract-gear:
 	$(DISPLAY) $(DATA)/gear.png;
+	#./make-se DISK 10 disk.png
+	#./erosion disk.png gear.png gear-res.png;
 
 extract-cell:
 	$(DISPLAY) $(DATA)/cell.png;
