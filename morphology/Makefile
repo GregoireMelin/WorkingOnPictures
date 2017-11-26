@@ -17,7 +17,8 @@ BIN = \
 	erosion\
 	opening\
 	closing\
-	labeling
+	labeling\
+	labeling-color
 
 all: $(OBJ) $(BIN)
 
@@ -25,6 +26,7 @@ test-deploy: all
 	@./make-se ; true
 	@./dilation ; true
 	@./labeling ; true
+	@./labeling-color ; true
 	make extract-gear
 	make extract-cell
 
