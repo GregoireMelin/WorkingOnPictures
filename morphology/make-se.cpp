@@ -7,7 +7,6 @@ using namespace std;
 
 enum Shape {SQUARE = 0, DIAMOND = 1, DISK = 2, LINE_V = 3, DIAG_R = 4, LINE_H = 5, DIAG_L = 6, CROSS = 7, PLUS = 8};
 
-
 void process(const int shape ,const int halfsize, const char* name)
 {
   int size = 2 * halfsize + 1;

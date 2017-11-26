@@ -2,47 +2,37 @@
 
 using namespace cv;
 
-
-
 void
 mm(Mat se, Mat ims, Mat imd, void (*pf)(uchar, uchar*))
 {
-  //(void)se;
-  //(void)ims;
-  //(void)imd;
-  //(void)pf;
-  for(int i=0;i<ims.rows;i++)
-  {
-    for(int j=0;j<ims.cols;j++)
-    {
-      uchar val=ims.at<uchar>(i,j);
-      for(int u=0;u<se.rows;u++)
-      {
-        for(int v=0;v<se.cols;v++)
-        {
-          pf(ims.at<uchar>(i+u,j+v),&val);
-        }
-      }
-      imd.at<uchar>(i,j)=val;
-    }
-  }
+	int size = se.rows, halfsize = size / 2;
+
+	for (int i = 0; i < ims.rows; ++i) {
+		for (int j = 0; j < ims.cols; ++j){
+			uchar val =ims.at<unsigned char>(i, j);
+			for (int u = 0; u < size; ++u)
+				for (int v = 0; v < size; ++v){
+					int iloc = i-halfsize+u, jloc = j-halfsize+v;
+					if (iloc >= 0 && iloc < ims.rows)
+						if (jloc >= 0 && jloc < ims.cols){
+							if (se.at<unsigned char>(u, v) == 255){
+								pf(ims.at<unsigned char>(iloc, jloc), &val);
+							}
+						}
+				}
+			imd.at<unsigned char>(i, j) = val;
+		}
+	}
 }
-//DILATION
+
 void
 maximum(uchar val, uchar* max)
 {
-  //(void)val;
-  //(void)max
-  if(val>*max)
-    *max=val;
+	if (val > *max) *max = val;
 }
 
-//EROSION
 void
 minimum(uchar val, uchar* min)
 {
-  //(void)val;
-  //(void)min;
-  if(val<*min)
-    *min=val;
+	if (val < *min) *min = val;
 }
