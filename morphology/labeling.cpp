@@ -93,7 +93,6 @@ process(const char* imsname)
 				roots[p] = l++;
 			else
 				roots[p] = roots[roots[p]];
-			cout<<roots[p]<<endl;
 		}
 	}
 

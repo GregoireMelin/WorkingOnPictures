@@ -40,9 +40,12 @@ _add(int p, int r, int* roots)
 }
 
 void
-process(const char* imsname)
+process(const char* imsname, const char* regname, const char* colorname)
 {
 	Mat ims = imread(imsname);
+	Mat imd_eq;
+	equalizeHist(ims,imd_eq);
+	imwrite("cell-r.png",imd_eq);
 
 	if(!ims.data){
 		cerr<<"Image not found, exit"<<endl;
@@ -113,6 +116,6 @@ main( int argc, char* argv[] )
 {
 	if(argc != (param+1))
 		usage(argv[0]);
-	process(argv[1]);
+	process(argv[1],argv[2],argv[3]);
 	return EXIT_SUCCESS;
 }
