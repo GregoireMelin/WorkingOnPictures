@@ -111,6 +111,7 @@ process(const char* imsname, const char* regname, const char* colorname)
 	Mat image_label_gray_eq=img_label_gray.clone();
 	equalizeHist(image_label_gray_eq,image_label_gray_eq);
 	imshow("Image en niveau de gris",image_label_gray_eq);
+	Mat image_label_color=image_label_gray_eq.clone();
 	waitKey(0);
 
 	delete [] roots;

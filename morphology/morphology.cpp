@@ -5,22 +5,22 @@ using namespace cv;
 void
 mm(Mat se, Mat ims, Mat imd, void (*pf)(uchar, uchar*))
 {
-	int size = se.rows, halfsize = size / 2;
+	int size = se.rows;
+	int halfsize = size / 2;
 
 	for (int i = 0; i < ims.rows; ++i) {
 		for (int j = 0; j < ims.cols; ++j){
-			uchar val =ims.at<uchar>(i, j);
+			uchar value =ims.at<uchar>(i, j);
 			for (int u = 0; u < size; ++u)
 				for (int v = 0; v < size; ++v){
-					int iloc = i-halfsize+u, jloc = j-halfsize+v;
-					if (iloc >= 0 && iloc < ims.rows)
-						if (jloc >= 0 && jloc < ims.cols){
-							if (se.at<uchar>(u, v) == 255){
-								pf(ims.at<uchar>(iloc, jloc), &val);
-							}
+					int local_i = i-halfsize+u, local_j = j-halfsize+v;
+					if (local_i >= 0 && local_i < ims.rows)
+						if (local_j >= 0 && local_j < ims.cols){
+							if (se.at<uchar>(u, v) == 255)
+								pf(ims.at<uchar>(local_i, local_j), &value);
 						}
 				}
-			imd.at<uchar>(i, j) = val;
+			imd.at<uchar>(i, j) = value;
 		}
 	}
 }
@@ -28,11 +28,13 @@ mm(Mat se, Mat ims, Mat imd, void (*pf)(uchar, uchar*))
 void
 maximum(uchar val, uchar* max)
 {
-	if (val > *max) *max = val;
+	if (val > *max)
+		*max = val;
 }
 //EROSION
 void
 minimum(uchar val, uchar* min)
 {
-	if (val < *min) *min = val;
+	if (val < *min)
+		*min = val;
 }
