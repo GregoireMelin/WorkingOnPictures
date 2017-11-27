@@ -52,7 +52,7 @@ process(const char* imsname, const char* regname, const char* colorname)
 	//cvtColor(ims, ims, CV_BGR2GRAY);
 	Mat imd_eq=ims.clone();
 	equalizeHist(ims,imd_eq);
-	Mat img_label_gray;
+	Mat img_label_gray=ims.clone();
 	imwrite("cell-r.png",imd_eq);
 	imwrite(regname,ims);
 	imwrite(colorname,ims);
@@ -101,13 +101,20 @@ process(const char* imsname, const char* regname, const char* colorname)
 				roots[p] = l++;
 			else
 				roots[p] = roots[roots[p]];
+			img_label_gray.at<uchar>(i,j)=roots[p];
 		}
-	
+
 
 	}
+	//cout<<"labeling: "<< l << " components detected"<<endl;
+	imshow("Image en niveau de gris",img_label_gray);
+	Mat image_label_gray_eq=img_label_gray.clone();
+	equalizeHist(image_label_gray_eq,image_label_gray_eq);
+	imshow("Image en niveau de gris",image_label_gray_eq);
+	waitKey(0);
 
-	cout<<"labeling: "<< l << " components detected"<<endl;
 	delete [] roots;
+	waitKey(0);
 }
 
 void
