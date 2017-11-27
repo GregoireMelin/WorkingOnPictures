@@ -22,7 +22,7 @@ process(const char* se, const char* ims, const char* imd)
 		exit(EXIT_FAILURE);
 	}
 
-	// Realise l'ouverture =
+	// Realise l'ouverture = erosion puis dilatation
 	Mat img_f = img.clone();
 	mm(img_sename, img, img_f, minimum);
 	mm(img_sename, img_f, img, maximum);
