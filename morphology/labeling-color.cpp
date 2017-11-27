@@ -48,10 +48,11 @@ process(const char* imsname, const char* regname, const char* colorname)
 		cerr<<"Image not found, exit"<<endl;
 		exit(EXIT_FAILURE);
 	}
-        //cvtColor(ims, ims, CV_BGR2GRAY);
+
+	//cvtColor(ims, ims, CV_BGR2GRAY);
 	Mat imd_eq=ims.clone();
 	equalizeHist(ims,imd_eq);
-
+	Mat img_label_gray;
 	imwrite("cell-r.png",imd_eq);
 	imwrite(regname,ims);
 	imwrite(colorname,ims);
@@ -101,6 +102,8 @@ process(const char* imsname, const char* regname, const char* colorname)
 			else
 				roots[p] = roots[roots[p]];
 		}
+	
+
 	}
 
 	cout<<"labeling: "<< l << " components detected"<<endl;

@@ -10,25 +10,28 @@ void
 process(const char* se, const char* ims, const char* imd)
 {
 	// Lire l'image ims en niveau de gris
-	Mat img_in = imread(ims, 0);
-	if (!img_in.data) {
+	Mat img = imread(ims, 0);
+	if (!img.data) {
 		cout<<"Could not open or find the image"<<endl;
 		exit(EXIT_FAILURE);
 	}
 	// Lire l'element structurant se en niveau de gris
-	Mat img_se = imread(se, 0);
-	if (!img_se.data) {
+	Mat img_sename = imread(se, 0);
+	if (!img_sename.data) {
 		cout<<"Could not open or find the image"<<endl;
 		exit(EXIT_FAILURE);
 	}
 
 	// Realise la fermeture
-	Mat img_out = img_in.clone();
-	mm(img_se, img_in, img_out, maximum);
-	mm(img_se, img_out, img_in, minimum);
+	Mat img_f = img.clone();
+	mm(img_sename, img, img_f, maximum);
+	mm(img_sename, img_f, img, minimum);
 
 	// Sauvegarder l'image imd
-	imwrite(imd, img_in);
+	imwrite(imd, img);
+	imshow("Original", img);
+	imshow("Opening",img_f);
+	waitKey(0);
 }
 
 void

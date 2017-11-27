@@ -24,6 +24,9 @@ process(const char* se, const char* ims, const char* imd)
 	Mat img_f = img.clone();
 	mm(img_se, img, img_f, maximum);
 	imwrite(imd, img_f);
+  imshow("Original", img);
+	imshow("Dilatation",img_f);
+	waitKey(0);
 }
 
 void

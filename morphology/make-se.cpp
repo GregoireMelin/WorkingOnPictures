@@ -9,37 +9,30 @@ enum Shape {SQUARE = 0, DIAMOND = 1, DISK = 2, LINE_V = 3, DIAG_R = 4, LINE_H = 
 
 void process(const int shape ,const int halfsize, const char* name)
 {
+  //Initialisation des variables
   int size = 2 * halfsize + 1;
-
   Mat se;
   Shape selectedShape = static_cast<Shape>(shape);
   se = Mat::zeros(size, size, CV_8UC1);
 
+  //Cas du carre
   if(selectedShape == SQUARE)
-  {
     se = Mat::ones(size, size, CV_8UC1);
-  }
   else if(selectedShape== LINE_V || selectedShape== LINE_H || selectedShape== PLUS )
   {
     if(selectedShape== LINE_V || selectedShape== PLUS)
     {
-
       for(int j =0; j< se.rows; j++)
-      {
         se.at<uchar>(j, halfsize) = 1;
-      }
-
     }
     if(selectedShape== LINE_H || selectedShape== PLUS)
     {
-
       for(int i=0; i< se.cols; i++)
-        {
           se.at<uchar>(halfsize, i) = 1;
-        }
-
     }
   }
+
+  //Cas des lignes diagonales + cas de la croix
   else if(selectedShape== DIAG_R || selectedShape== DIAG_L || selectedShape== CROSS )
   {
     if(selectedShape== DIAG_R || selectedShape== CROSS)
@@ -60,9 +53,10 @@ void process(const int shape ,const int halfsize, const char* name)
         se.at<uchar>(j, i) = 1;
         i++;
       }
-
     }
   }
+
+  //Cas du losange
   else if (selectedShape== DIAMOND)
   {
     int start = halfsize;
@@ -93,6 +87,8 @@ void process(const int shape ,const int halfsize, const char* name)
       }
     }
   }
+
+  //Cas du disque
   else if (selectedShape== DISK)
   {
     for(int j =0; j< se.rows; j++)
@@ -101,21 +97,18 @@ void process(const int shape ,const int halfsize, const char* name)
       {
         int x = i - halfsize;
         int y = j - halfsize;
-
-
         if(sqrt(pow(x,2) + pow(y,2)) <= halfsize )
           se.at<uchar>(j, i) = 1;
       }
     }
   }
-
+  //Binarisation de l'image
   threshold(se, se, 0, 255, CV_THRESH_BINARY);
+  //Enregistrement et affichage
   imwrite(name, se);
   imshow("Shape", se);
-  waitKey(0);
-
+  //waitKey(0);
 }
-
 void usage (const char *s)
 {
     cout<<"Usage: "<<s<<"usage : ERROR"<<endl;
@@ -128,6 +121,5 @@ int main( int argc, char* argv[] )
   if(argc != (param+1))
     usage(argv[0]);
   process(atoi(argv[1]),atoi(argv[2]),argv[3]);
-
   return EXIT_SUCCESS;
 }
