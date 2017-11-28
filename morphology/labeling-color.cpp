@@ -42,12 +42,11 @@ _add(int p, int r, int* roots)
 void
 process(const char* imsname, const char* regname, const char* colorname)
 {
-
 	Mat ims = imread(imsname,0);
 	if(!ims.data){
 		cerr<<"Image not found, exit"<<endl;
 		exit(EXIT_FAILURE);
-	}
+  }
 
 	//cvtColor(ims, ims, CV_BGR2GRAY);
 	Mat imd_eq=ims.clone();
@@ -56,8 +55,6 @@ process(const char* imsname, const char* regname, const char* colorname)
 	imwrite("cell-r.png",imd_eq);
 	imwrite(regname,ims);
 	imwrite(colorname,ims);
-
-
 
 	int* roots = new int[ims.total()];
 	int rows = ims.rows;
@@ -103,15 +100,24 @@ process(const char* imsname, const char* regname, const char* colorname)
 				roots[p] = roots[roots[p]];
 			img_label_gray.at<uchar>(i,j)=roots[p];
 		}
-
-
 	}
+	Mat color_panel=Mat::zeros(1,l,CV_8UC1);
+	/*for(int u=0;u<l;u++)
+	{
+		cout << u <<endl;
+		color_panel.at<Scalar>(0,u) = Scalar(rand()%256, rand()%256, rand()%256);
+		cout << color_panel.at<Scalar>(0,u) <<endl;
+  }*/
 	//cout<<"labeling: "<< l << " components detected"<<endl;
+
 	imshow("Image en niveau de gris",img_label_gray);
 	Mat image_label_gray_eq=img_label_gray.clone();
 	equalizeHist(image_label_gray_eq,image_label_gray_eq);
 	imshow("Image en niveau de gris",image_label_gray_eq);
-	Mat image_label_color=image_label_gray_eq.clone();
+	imwrite(regname,image_label_gray_eq);
+	Mat image_label_color=img_label_gray.clone();
+	cvtColor(image_label_color, image_label_color, CV_GRAY2BGR);
+	imshow("Image en couleur",image_label_color);
 	waitKey(0);
 
 	delete [] roots;
@@ -121,7 +127,7 @@ process(const char* imsname, const char* regname, const char* colorname)
 void
 usage (const char *s)
 {
-	std::cerr<<"Usage: "<<s<<" ims"<<std::endl;
+	std::cerr<<"Usage: "<<s<<" ims regname colorname"<<std::endl;
 	exit(EXIT_FAILURE);
 }
 

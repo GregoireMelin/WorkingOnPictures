@@ -11,6 +11,7 @@ process(const char* se, const char* ims, const char* imd)
 {
 	// Lire l'image ims en niveau de gris
 	Mat img = imread(ims, 0);
+	Mat img_original=imread(ims, 0);
 	if (!img.data) {
 		cout<<"Could not open or find the image"<<endl;
 		exit(EXIT_FAILURE);
@@ -29,7 +30,7 @@ process(const char* se, const char* ims, const char* imd)
 
 	// Sauvegarder l'image imd
 	imwrite(imd, img);
-	imshow("Original", img);
+	imshow("Original", img_original);
 	imshow("Opening",img_f);
 	waitKey(0);
 }
