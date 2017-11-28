@@ -101,13 +101,25 @@ process(const char* imsname, const char* regname, const char* colorname)
 			img_label_gray.at<uchar>(i,j)=roots[p];
 		}
 	}
-	Mat color_panel=Mat::zeros(1,l,CV_8UC1);
-	/*for(int u=0;u<l;u++)
+
+  Mat color_panel_r = Mat::zeros(1,l, CV_8UC1);
+	Mat color_panel_g = Mat::zeros(1,l, CV_8UC1);
+	Mat color_panel_b = Mat::zeros(1,l, CV_8UC1);
+
+	for(int u=0;u<l;u++)
 	{
 		cout << u <<endl;
-		color_panel.at<Scalar>(0,u) = Scalar(rand()%256, rand()%256, rand()%256);
-		cout << color_panel.at<Scalar>(0,u) <<endl;
-  }*/
+		//Scalar lol = Scalar(rand()%256, rand()%256, rand()%256);
+
+		int r = rand()%256;
+		int g = rand()%256;
+		int b = rand()%256;
+
+  	color_panel_r.at<uchar>(0,u) = r;
+		color_panel_g.at<uchar>(0,u) = g;
+		color_panel_b.at<uchar>(0,u) = b;
+  }
+
 	//cout<<"labeling: "<< l << " components detected"<<endl;
 
 	imshow("Image en niveau de gris",img_label_gray);
@@ -117,6 +129,22 @@ process(const char* imsname, const char* regname, const char* colorname)
 	imwrite(regname,image_label_gray_eq);
 	Mat image_label_color=img_label_gray.clone();
 	cvtColor(image_label_color, image_label_color, CV_GRAY2BGR);
+
+	Vec3b color;
+
+	for ( int j = 0; j < image_label_color.rows; ++j)
+  {
+    for ( int i = 0; i < image_label_color.cols; ++i)
+      {
+			color = image_label_color.at<Vec3b>(j,i);
+
+			if(color != Vec3b(0,0,0))
+			{
+			  image_label_color.at<Vec3b>(j,i) = Vec3b((int)color_panel_b.at<uchar>(0,color.val[0]),(int)color_panel_g.at<uchar>(0,color.val[0]),(int)color_panel_r.at<uchar>(0,color.val[0]));
+			}
+		}
+	}
+
 	imshow("Image en couleur",image_label_color);
 	waitKey(0);
 
