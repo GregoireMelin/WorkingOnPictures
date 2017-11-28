@@ -89,7 +89,7 @@ distclean: clean
 	-$(RM) libpandore.so
 	-$(RM) libpandore.a
 install:
-	@echo "Installation folder: /net/g/erinoumri/Desktop/Traitement2/WorkingOnPictures/src/pandore-visu"
+	@echo "Installation folder: /net/g/gremelin/Documents/vision_robotique/WorkingOnPictures/src/pandore-visu"
 	@echo "done".
 
 uninstall:

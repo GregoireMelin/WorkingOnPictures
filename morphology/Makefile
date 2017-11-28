@@ -8,7 +8,7 @@ LDFLAGS = -Wl,-R/opt/opencv/lib -L/opt/opencv/lib $(OCVLIB)
 
 #modify data path or diplay command if applicable
 DATA=../data
-DISPLAY=pvisu
+SHOW=pvisu
 
 OBJ = morphology.o
 BIN = \
@@ -36,12 +36,24 @@ morphology.o: morphology.cpp morphology.hpp
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 extract-gear:
-	$(DISPLAY) $(DATA)/gear.png;
-	#./make-se DISK 10 disk.png
-	#./erosion disk.png gear.png gear-res.png;
+	#$(SHOW) $(DATA)/gear.png;
+	cp $(DATA)/gear.png gear.png
+	./make-se 2 10 disk-10.png
+	./erosion disk-10.png gear.png gear-res.png
+	./dilation disk-10.png gear-res.png  gear-res.png
+	  composite gear.png gear-res.png\
+	            -compose difference  difference.png
+	 xdg-open difference.png
+	 ./labeling-color difference.png gear-res.png gear-res-color.png
+	 xdg-open gear-res.png
+	 xdg-open gear-res-color.png
+
+
+
+
 
 extract-cell:
-	$(DISPLAY) $(DATA)/cell.png;
+	#$(SHOW) $(DATA)/cell.png;
 
 clean:
 	$(RM) *~ *.png

@@ -33,7 +33,7 @@ process(const char* se, const char* ims, const char* imd)
 	imwrite(imd, img_f);
 	imshow("Original", img);
 	imshow("Erosion",img_f);
-	waitKey(0);
+//	waitKey(0);
 }
 
 void

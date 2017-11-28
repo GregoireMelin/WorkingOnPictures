@@ -51,8 +51,14 @@ process(const char* imsname, const char* regname, const char* colorname)
 	//cvtColor(ims, ims, CV_BGR2GRAY);
 	Mat imd_eq=ims.clone();
 	equalizeHist(ims,imd_eq);
-	Mat img_label_gray=ims.clone();
+
+	threshold(imd_eq,imd_eq, 173, 255, 1);
+	threshold(imd_eq,imd_eq, 0, 255, 1);
+
+	Mat img_label_gray=imd_eq.clone();
+
 	imwrite("cell-r.png",imd_eq);
+
 	imwrite(regname,ims);
 	imwrite(colorname,ims);
 
@@ -108,9 +114,6 @@ process(const char* imsname, const char* regname, const char* colorname)
 
 	for(int u=0;u<l;u++)
 	{
-		cout << u <<endl;
-		//Scalar lol = Scalar(rand()%256, rand()%256, rand()%256);
-
 		int r = rand()%256;
 		int g = rand()%256;
 		int b = rand()%256;
@@ -124,7 +127,9 @@ process(const char* imsname, const char* regname, const char* colorname)
 
 	imshow("Image en niveau de gris",img_label_gray);
 	Mat image_label_gray_eq=img_label_gray.clone();
+
 	equalizeHist(image_label_gray_eq,image_label_gray_eq);
+
 	imshow("Image en niveau de gris",image_label_gray_eq);
 	imwrite(regname,image_label_gray_eq);
 	Mat image_label_color=img_label_gray.clone();
