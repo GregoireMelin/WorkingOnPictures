@@ -6,6 +6,46 @@
 using namespace cv;
 using namespace std;
 
+Mat accumulateur(Mat image, int ts)
+{
+	Mat H=Mat::zeros(round(sqrt(image.cols*image.cols+image.rows*image.rows)),180, CV_8UC1);
+	for (int i = 0; i<image.rows; i++)
+		for (int j = 0; j<image.cols; j++)
+			if(image.at<uchar>(i,j)>=ts)
+			{
+				for (int theta = 0; theta <H.cols; theta++) //theta : 0 --> 180
+				{
+					int rho = abs(round(i*cos(theta*(CV_PI/180))+j*sin(theta*(CV_PI/180))));
+					if (rho>=0 && rho<H.rows)
+					H.at<uchar>(rho,theta)+=1;
+				}
+			}
+		return(H);
+}
+
+Mat coloringLineDetected(Mat image, Mat H, Mat H_pt,Vec3b color)
+{
+
+	Mat dest = Mat::zeros(image.rows, image.cols, CV_8UC3);
+	int new_rho,new_theta;
+	for (int rho = 0; rho < H.rows; rho++)
+	{
+			for (int theta = 0 ; theta < H.cols; theta++)
+			{
+					if (H_pt.at<uchar>(rho, theta) == 255)
+					{
+							new_theta = theta;
+							new_rho = rho;
+							for (int i = 0; i < image.rows; i++)
+									for (int j = 0 ; j < image.cols; j++)
+											if (new_rho == (int) abs(round(i*cos(new_theta*(CV_PI/180)) + j*sin(new_theta*(CV_PI/180)))))
+													dest.at<Vec3b>(i,j) = color;
+					}
+			}
+	}
+	return(dest);
+}
+
 void process(const char* ims, int th_mag)
 {
 	//Chargement de l'image en niveaux de gris
@@ -18,55 +58,22 @@ void process(const char* ims, int th_mag)
 			exit (EXIT_FAILURE);
 	}
 
-  //Calcul de rho=i*cos(theta)+j*sin(theta) et creation histogramme
-  Mat H=Mat::zeros(round(sqrt(image.cols*image.cols+image.rows*image.rows)),180, CV_8UC1);
-  for (int i = 0; i<image.rows; i++)
-    for (int j = 0; j<image.cols; j++)
-      for (int theta = 0; theta <H.cols; theta++) //theta : 0 --> 180
-      {
-        //Si superieur au seuil
-        if(image.at<uchar>(i,j)>=th_mag)
-        {
-          int rho = abs(round(i*cos(theta*(CV_PI/180))+j*sin(theta*(CV_PI/180))));
-          if (rho>=0 && rho<H.rows)
-            H.at<uchar>(rho,theta)+=1;
-        }
-      }
+  	//Calcul de rho=i*cos(theta)+j*sin(theta) et creation histogramme
+		Mat H=accumulateur(image,th_mag);
 
     //Egalisation d'histogramme
     Mat H_equalized = H.clone();
     equalizeHist(H, H_equalized);
-
     Mat H_pt,dest;
     double min, max;
-
     //Determination du minimum et du maximum local
     cv::minMaxLoc(H, &min, &max);
-
     //Seuillage
     threshold(H, H_pt, max-4, 255, CV_THRESH_BINARY);
-
-    dest = Mat::zeros(image.rows, image.cols, CV_8UC3);
     //ROUGE : R = 255; G = 0; B = 0
     Vec3b red(0,0,255);
-    int new_rho,new_theta;
-
-    //COLORATION DES LIGNES DETECTEES EN ROUGE
-    for (int rho = 0; rho < H.rows; rho++)
-    {
-        for (int theta = 0 ; theta < H.cols; theta++)
-        {
-            if (H_pt.at<uchar>(rho, theta) == 255)
-            {
-                new_theta = theta;
-                new_rho = rho;
-                for (int i = 0; i < image.rows; i++)
-                    for (int j = 0 ; j < image.cols; j++)
-                        if (new_rho == (int) abs(round(i*cos(new_theta*(CV_PI/180)) + j*sin(new_theta*(CV_PI/180)))))
-                            dest.at<Vec3b>(i,j) = red;
-            }
-        }
-    }
+		//COLORATION DES LIGNES DETECTEES EN ROUGE
+		dest=coloringLineDetected(image,H,H_pt,red);
     //AFFICHAGES et ENREGISTREMENTS
     /*imwrite("result.png",H);
     imwrite("result_equalized.png",H_equalized);
