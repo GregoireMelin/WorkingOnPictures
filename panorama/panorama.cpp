@@ -147,20 +147,31 @@ void process(const char* ims1, const char* ims2)
 
 
     Vec3b colour;
-    int cropLength;
+    int cropLengthCol;
+    int cropLengthRow;
+
     for( int j = 0; j < panorama.cols; j++)
     {
       colour = panorama.at<Vec3b>(0,j);
       if(colour == panorama.at<Vec3b>(0,panorama.cols-1) )
       {
-        cropLength = j-1;
-        cout<<cropLength<<endl;
+        cropLengthCol = j-1;
+        break;
+      }
+    }
+
+    for( int i = 0; i < panorama.rows; i++)
+    {
+      colour = panorama.at<Vec3b>(i,0);
+      if(colour == panorama.at<Vec3b>(0,panorama.cols-1) )
+      {
+        cropLengthRow = i-1;
         break;
       }
     }
 
 
-    Mat panoramaFinal(image.rows, cropLength,CV_8UC3);
+    Mat panoramaFinal(cropLengthRow, cropLengthCol,CV_8UC3);
 
      for( int i = 0; i < panoramaFinal.rows; i++ )
      {
