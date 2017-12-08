@@ -11,10 +11,8 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-
 using namespace cv;
 using namespace std;
-
 
 void process(const char* ims1, const char* ims2)
 {
@@ -147,7 +145,22 @@ void process(const char* ims1, const char* ims2)
 
     imshow("panorama", panorama);
 
-    Mat panoramaFinal(image.rows, image.cols + image.cols,CV_8UC3);
+
+    Vec3b colour;
+    int cropLength;
+    for( int j = 0; j < panorama.cols; j++)
+    {
+      colour = panorama.at<Vec3b>(0,j);
+      if(colour == panorama.at<Vec3b>(0,panorama.cols-1) )
+      {
+        cropLength = j-1;
+        cout<<cropLength<<endl;
+        break;
+      }
+    }
+
+
+    Mat panoramaFinal(image.rows, cropLength,CV_8UC3);
 
      for( int i = 0; i < panoramaFinal.rows; i++ )
      {
@@ -156,7 +169,6 @@ void process(const char* ims1, const char* ims2)
          panoramaFinal.at<Vec3b>(i,j) = panorama.at<Vec3b>(i,j);
        }
      }
-
 
     imshow("panorama final", panoramaFinal);
 
