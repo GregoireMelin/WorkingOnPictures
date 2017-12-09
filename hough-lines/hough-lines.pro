@@ -4,7 +4,7 @@ OBJECT_DIR = .obj
 TEMPLATE   = app
 CONFIG  += qt warn_on release thread
 SOURCES  = hough-lines.cpp
-TARGET   = hough
+TARGET   = hough-lines
 CONFIG  -= app_bundle
 
 enseirb {
