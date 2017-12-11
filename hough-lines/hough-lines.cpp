@@ -33,6 +33,7 @@ Mat coloringLineDetectedInRed(Mat image_input,Mat H, Mat H_pt, Mat dest)
 	}
 	 return(dest);
 }
+
 Mat computeHoughTransform(Mat image_input, int th, Mat dest)
 {
 	//parametre permettant de recentrer l'accumulateur
@@ -71,6 +72,7 @@ Mat computeHoughTransform(Mat image_input, int th, Mat dest)
 	}
 	 return(dest);
 }
+
 void process (const char* ims, const unsigned th_mag)
 {
 	// Lire l'image ims en niveau de gris
