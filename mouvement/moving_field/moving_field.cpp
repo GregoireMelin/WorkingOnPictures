@@ -37,8 +37,6 @@ int main( int argc, char* argv[] )
 
 
   Mat frame;
-  Mat frame2;
-  Mat difference;
   namedWindow("video",1);
   cap >> frame;
 
@@ -46,47 +44,12 @@ int main( int argc, char* argv[] )
   currentFrame = 0;
   for (int f=1; f<nbFrame; f++)
   {
-    currentFrame=currentFrame+1;
     cap >> frame;
-
-    cap >> frame2;
-
-    difference = frame - frame2;
-    cvtColor(difference, difference, CV_BGR2GRAY);
-    //Seuillage
-    threshold(difference, difference, 50, 255, 0);
 
     if(!frame.data)
       break;
 
-    imshow("video",difference);
-
-    if(waitKey(30) >= 0)
-      break;
-  }
-
-  Mat background;
-
-  for (int f=1; f<nbFrame; f++)
-  {
-    currentFrame=currentFrame+1;
-    cap >> frame;
-
-    cap >> frame2;
-
-    Mat lol;
-    Mat lol2;
-    Point o;
-
-
-    cvtColor(difference, difference, CV_BGR2GRAY);
-    //Seuillage
-    threshold(difference, difference, 50, 255, 0);
-
-    if(!frame.data)
-      break;
-
-    imshow("video2",background);
+    imshow("video",frame);
 
     if(waitKey(30) >= 0)
       break;
