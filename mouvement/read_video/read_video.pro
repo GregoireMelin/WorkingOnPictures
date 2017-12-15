@@ -3,8 +3,8 @@ OBJECT_DIR = .obj
 
 TEMPLATE   = app
 CONFIG  += qt warn_on release thread
-SOURCES  = KLT.cpp 
-TARGET   = KLT
+SOURCES  = read_video.cpp
+TARGET   = read_video
 CONFIG  -= app_bundle
 
 enseirb {

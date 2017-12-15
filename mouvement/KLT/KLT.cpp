@@ -22,7 +22,6 @@ int main( int argc, char** argv )
   }
 
   //---- OUVERTURE DE LA VIDEO ---- //
-
   VideoCapture capture(argv[1]); //1er argument = nom de la video chargee
   if(!capture.isOpened())
   {
@@ -51,6 +50,7 @@ int main( int argc, char** argv )
   size_t i;
   for( i = 0; i < features.size(); i++ )
     circle( frame, features[i], 3, Scalar(0,255,0), -1, 8);   //On marque d'un cercle les feature reperees sur la premiere image de la video
+
 // ---------------------------------------------
   //Fonction goodFeaturesToTrack() :
   //The function finds the most prominent corners in the image or in the specified image region.

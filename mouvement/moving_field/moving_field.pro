@@ -3,8 +3,8 @@ OBJECT_DIR = .obj
 
 TEMPLATE   = app
 CONFIG  += qt warn_on release thread
-SOURCES  = KLT.cpp 
-TARGET   = KLT
+SOURCES  = moving_field.cpp 
+TARGET   = moving_field
 CONFIG  -= app_bundle
 
 enseirb {
