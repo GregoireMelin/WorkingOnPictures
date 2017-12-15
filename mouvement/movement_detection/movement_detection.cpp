@@ -3,11 +3,9 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/video/background_segm.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/video/tracking.hpp"
-
 #include <iostream>
-#include <sstream>
-
 #include <fstream>
 #include <cstdlib>
 #include <vector>
@@ -56,6 +54,7 @@ int main( int argc, char* argv[] )
     //Seuillage
     threshold(difference, difference, 50, 255, 0);
 
+
     if(!frame.data)
       break;
 
@@ -66,30 +65,67 @@ int main( int argc, char* argv[] )
   }
 
   Mat background;
+  currentFrame = 0;
 
+
+  namedWindow("video2",1);
   for (int f=1; f<nbFrame; f++)
   {
     currentFrame=currentFrame+1;
     cap >> frame;
-
     cap >> frame2;
 
-    Mat lol;
-    Mat lol2;
-    Point o;
+    cvtColor(frame, frame, CV_BGR2GRAY);
+    cvtColor(frame2, frame2, CV_BGR2GRAY);
 
+    BackgroundSubtractorMOG2 BGModel;
 
-    cvtColor(difference, difference, CV_BGR2GRAY);
-    //Seuillage
+    BGModel(frame2, background, -1);
+
+    difference = frame - background;
+
     threshold(difference, difference, 50, 255, 0);
 
     if(!frame.data)
       break;
 
-    imshow("video2",background);
+    imshow("video2",difference);
 
     if(waitKey(30) >= 0)
       break;
   }
+
+  Mat background3;
+  currentFrame = 0;
+
+
+
+  namedWindow("video3",1);
+  for (int f=1; f<nbFrame; f++)
+  {
+    currentFrame=currentFrame+1;
+    cap >> frame;
+    cap >> frame2;
+
+    cvtColor(frame, frame, CV_BGR2GRAY);
+    cvtColor(frame2, frame2, CV_BGR2GRAY);
+
+    BackgroundSubtractor BGModel2;
+
+    BGModel2(frame2, background3, -1);
+
+    difference = frame - background3;
+
+    threshold(difference, difference, 50, 255, 0);
+
+    if(!frame.data)
+      break;
+
+    imshow("video3",difference);
+
+    if(waitKey(30) >= 0)
+      break;
+  }
+
   return EXIT_SUCCESS;
 }
