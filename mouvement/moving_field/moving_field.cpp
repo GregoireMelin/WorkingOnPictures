@@ -1,16 +1,16 @@
 
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/video/background_segm.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/video/tracking.hpp"
-
 #include <iostream>
-#include <sstream>
-
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+
 
 using namespace cv;
 using namespace std;
@@ -18,6 +18,20 @@ using namespace std;
 //Variables globales
 int currentFrame;
 VideoCapture cap;
+
+
+void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step, const Scalar& color)
+{
+  for(int y = 0; y < cflowmap.rows; y += step)
+  {
+    for(int x = 0; x < cflowmap.cols; x += step)
+      {
+        const Point2f& fxy = flow.at<Point2f>(y, x);
+        line(cflowmap, Point(x,y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)),
+        circle(cflowmap, Point(x,y), 2, color, -1);
+      }
+  }
+}
 
 void usage (const char *s)
 {
@@ -67,29 +81,6 @@ int main( int argc, char* argv[] )
 
   Mat background;
 
-  for (int f=1; f<nbFrame; f++)
-  {
-    currentFrame=currentFrame+1;
-    cap >> frame;
 
-    cap >> frame2;
-
-    Mat lol;
-    Mat lol2;
-    Point o;
-
-
-    cvtColor(difference, difference, CV_BGR2GRAY);
-    //Seuillage
-    threshold(difference, difference, 50, 255, 0);
-
-    if(!frame.data)
-      break;
-
-    imshow("video2",background);
-
-    if(waitKey(30) >= 0)
-      break;
-  }
   return EXIT_SUCCESS;
 }
