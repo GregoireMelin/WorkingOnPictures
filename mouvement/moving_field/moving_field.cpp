@@ -1,4 +1,3 @@
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -17,7 +16,6 @@ using namespace cv;
 using namespace std;
 
 //Variables globales
-int currentFrame;
 VideoCapture cap;
 
 void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,const Scalar& color)
@@ -40,60 +38,47 @@ void usage (const char *s)
 #define param 1
 int main( int argc, char* argv[] )
 {
-
   //AFFICHAGE DE LA VIDEO
   if(argc > 1)
     cap.open(string(argv[1]));
   else
     cap.open(0);
 
-  Mat flow, frame;
-  Mat  flowUmat, prevgray;
-
+  Mat res, img1, img2, img2Original, img2OriginalC;
+  VideoWriter writer;
+  //namedWindow("Video", cv::WINDOW_AUTOSIZE);
+  cap >> img1;
+  cvtColor(img1, img1, COLOR_BGR2GRAY);
+  double fps = cap.get(CV_CAP_PROP_FPS);
+  cv::Size tamano((int)cap.get(CV_CAP_PROP_FRAME_WIDTH), (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+  writer.open("result.avi", CV_FOURCC('M', 'J', 'P', 'G'), fps, tamano);
   for (;;)
   {
-    cap >> frame;
-    Mat img;
-    Mat original;
-    // capture frame from video file
-    cap.retrieve(img, CV_CAP_OPENNI_BGR_IMAGE);
-    resize(img, img, Size(640, 480));
+    cap >> img2;
 
-    // save original for later
-    img.copyTo(original);
-
-    // just make current frame gray
-    cvtColor(img, img, COLOR_BGR2GRAY);
-
-    if (prevgray.empty() == false)
-    {
-     // calculate optical flow
-     calcOpticalFlowFarneback(prevgray, img, flowUmat, 0.4, 1, 12, 2, 8, 1.2, 0);
-     // copy Umat container to standard Mat
-     flowUmat.copyTo(flow);
-
-     // By y += 5, x += 5 you can specify the grid
-     for (int y = 0; y < original.rows; y += 5)
-     {
-       for (int x = 0; x < original.cols; x += 5)
-       {
-         // get the flow from y, x position * 10 for better visibility
-         const Point2f flowatxy = flow.at<Point2f>(y, x) * 10;
-         // draw line at flow direction
-         line(original, Point(x, y), Point(cvRound(x + flowatxy.x), cvRound(y + flowatxy.y)), Scalar(255,0,0));                                                  // draw initial point
-         circle(original, Point(x, y), 1, Scalar(0, 0, 0), -1);
-       }
+    if (img2.empty())
+      break;
+    img2OriginalC=img2.clone();
+    cvtColor(img2, img2, COLOR_BGR2GRAY);
+    img2Original=img2.clone();
+    calcOpticalFlowFarneback(img1, img2, res, .4, 1, 12, 2, 8, 1.2, 0);
+    for (int y = 0; y < img2.rows; y += 5) {
+      for (int x = 0; x < img2.cols; x += 5)
+      {
+        // get the flow from y, x position * 3 for better visibility
+        const Point2f flowatxy = res.at<Point2f>(y, x) * 1;
+        // draw line at flow direction
+        line(img2OriginalC, Point(x, y), Point(cvRound(x + flowatxy.x), cvRound(y + flowatxy.y)), Scalar(255, 0, 0));
+        // draw initial point
+        circle(img2OriginalC, Point(x, y), 1, Scalar(0, 0, 0), -1);
       }
     }
-    else
-    {
-      img.copyTo(prevgray);
-    }
-    namedWindow("prew", WINDOW_AUTOSIZE);
-    imshow("prew", original);
-    img.copyTo(prevgray);
+    img2Original=img1.clone();
+    imshow("RESULT",img2OriginalC);
+    writer << img2OriginalC;
+    if (cv::waitKey(1) == 27) break;
 
- }
+  }
+  cap.release();
   return EXIT_SUCCESS;
 }
-
