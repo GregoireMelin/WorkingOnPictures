@@ -46,7 +46,6 @@ int main( int argc, char* argv[] )
 
   Mat res, img1, img2, img2Original, img2OriginalC;
   VideoWriter writer;
-  //namedWindow("Video", cv::WINDOW_AUTOSIZE);
   cap >> img1;
   cvtColor(img1, img1, COLOR_BGR2GRAY);
   double fps = cap.get(CV_CAP_PROP_FPS);
@@ -62,6 +61,10 @@ int main( int argc, char* argv[] )
     cvtColor(img2, img2, COLOR_BGR2GRAY);
     img2Original=img2.clone();
     calcOpticalFlowFarneback(img1, img2, res, .4, 1, 12, 2, 8, 1.2, 0);
+
+    //Premiers tests :
+    //calcOpticalFlowFarneback(img1, img2, res, .4, 1, 12, 2, 8, 1.2, 0);
+
     for (int y = 0; y < img2.rows; y += 5) {
       for (int x = 0; x < img2.cols; x += 5)
       {
