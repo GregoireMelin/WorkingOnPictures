@@ -33,11 +33,11 @@ int main( int argc, char* argv[] )
   else
     cap.open(0);
 
-
-  Mat frame;
-  Mat frame2;
-  Mat difference;
+  Mat frame,frame2,difference;
+  cap >> frame;
   namedWindow("video",1);
+  namedWindow("video2",1);
+  namedWindow("video3",1);
   cap >> frame;
 
   int nbFrame = int(cap.get(CV_CAP_PROP_FRAME_COUNT));
@@ -46,20 +46,18 @@ int main( int argc, char* argv[] )
   {
     currentFrame=currentFrame+1;
     cap >> frame;
-
     cap >> frame2;
+    if(!frame.data || !frame2.data)
+      break;
 
+    //Faire la difference des images pixel a pixel
     difference = frame - frame2;
     cvtColor(difference, difference, CV_BGR2GRAY);
     //Seuillage
     threshold(difference, difference, 50, 255, 0);
 
-
-    if(!frame.data)
-      break;
-
+    //Affichage
     imshow("video",difference);
-
     if(waitKey(30) >= 0)
       break;
   }
@@ -68,7 +66,6 @@ int main( int argc, char* argv[] )
   currentFrame = 0;
 
 
-  namedWindow("video2",1);
   for (int f=1; f<nbFrame; f++)
   {
     currentFrame=currentFrame+1;
@@ -90,9 +87,9 @@ int main( int argc, char* argv[] )
       break;
 
     imshow("video2",difference);
-
     if(waitKey(30) >= 0)
       break;
+
   }
 
   Mat background3;
@@ -100,7 +97,6 @@ int main( int argc, char* argv[] )
 
 
 
-  namedWindow("video3",1);
   for (int f=1; f<nbFrame; f++)
   {
     currentFrame=currentFrame+1;
@@ -122,9 +118,9 @@ int main( int argc, char* argv[] )
       break;
 
     imshow("video3",difference);
-
     if(waitKey(30) >= 0)
       break;
+
   }
 
   return EXIT_SUCCESS;

@@ -65,7 +65,8 @@ int main( int argc, char* argv[] )
     //Premiers tests :
     //calcOpticalFlowFarneback(img1, img2, res, .4, 1, 12, 2, 8, 1.2, 0);
 
-    for (int y = 0; y < img2.rows; y += 5) {
+    for (int y = 0; y < img2.rows; y += 5)
+    {
       for (int x = 0; x < img2.cols; x += 5)
       {
         // get the flow from y, x position * 3 for better visibility
