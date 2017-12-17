@@ -15,4 +15,5 @@ QMAKE_LFLAGS += -Wl,-R/opt/opencv/lib -L/opt/opencv/lib
 LIBS += \
 -lopencv_core \
 -lopencv_highgui \
--lopencv_imgproc
+-lopencv_imgproc \
+-lopencv_video

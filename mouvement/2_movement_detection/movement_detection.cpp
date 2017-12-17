@@ -16,29 +16,16 @@ using namespace std;
 //Variables globales
 int currentFrame;
 VideoCapture cap;
-
 void usage (const char *s)
 {
     cout<<"Usage: "<<s<<"usage : ERROR"<<endl;
     exit(EXIT_FAILURE);
 }
-
-#define param 1
-int main( int argc, char* argv[] )
+void difference(VideoCapture cap)
 {
-
-  //AFFICHAGE DE LA VIDEO
-  if(argc > 1)
-    cap.open(string(argv[1]));
-  else
-    cap.open(0);
-
   Mat frame,frame2,difference;
   cap >> frame;
   namedWindow("video",1);
-  namedWindow("video2",1);
-  namedWindow("video3",1);
-  cap >> frame;
 
   int nbFrame = int(cap.get(CV_CAP_PROP_FRAME_COUNT));
   currentFrame = 0;
@@ -61,67 +48,77 @@ int main( int argc, char* argv[] )
     if(waitKey(30) >= 0)
       break;
   }
-
+}
+void difference_background_1(VideoCapture cap)
+{
+  Mat difference, frame, frame2;
   Mat background;
+  cap >> frame;
+  namedWindow("video2",1);
+
+
+
+  int nbFrame = int(cap.get(CV_CAP_PROP_FRAME_COUNT));
   currentFrame = 0;
-
-
   for (int f=1; f<nbFrame; f++)
   {
     currentFrame=currentFrame+1;
     cap >> frame;
     cap >> frame2;
+    if(!frame.data || !frame2.data)
+      break;
 
     cvtColor(frame, frame, CV_BGR2GRAY);
     cvtColor(frame2, frame2, CV_BGR2GRAY);
-
     BackgroundSubtractorMOG2 BGModel;
-
     BGModel(frame2, background, -1);
-
     difference = frame - background;
-
     threshold(difference, difference, 50, 255, 0);
-
-    if(!frame.data)
-      break;
 
     imshow("video2",difference);
     if(waitKey(30) >= 0)
       break;
 
   }
-
-  Mat background3;
-  currentFrame = 0;
-
-
-
-  for (int f=1; f<nbFrame; f++)
+}
+void difference_background_2(VideoCapture cap)
+{
+  int nbFrame = int(cap.get(CV_CAP_PROP_FRAME_COUNT));
+  Mat difference, frame, frame2,background3;
+  int currentFrame = 0;
+  namedWindow("video3",1);
+  for (int f=0; f<nbFrame; f++)
   {
     currentFrame=currentFrame+1;
     cap >> frame;
     cap >> frame2;
-
-    cvtColor(frame, frame, CV_BGR2GRAY);
-    cvtColor(frame2, frame2, CV_BGR2GRAY);
-
-    BackgroundSubtractor BGModel2;
-
-    BGModel2(frame2, background3, -1);
-
-    difference = frame - background3;
-
-    threshold(difference, difference, 50, 255, 0);
-
-    if(!frame.data)
+    if(!frame.data || !frame.data)
       break;
-
+    //cvtColor(frame, frame, CV_BGR2GRAY);
+    //cvtColor(frame2, frame2, CV_BGR2GRAY);
+    BackgroundSubtractor BGModel2;
+    BGModel2(frame2, background3, -1);
+    difference = frame - background3;
+    threshold(difference, difference, 50, 255, 0);
     imshow("video3",difference);
     if(waitKey(30) >= 0)
       break;
-
   }
+}
+
+#define param 1
+int main( int argc, char* argv[] )
+{
+
+  //AFFICHAGE DE LA VIDEO
+  if(argc > 1)
+    cap.open(string(argv[1]));
+  else
+    cap.open(0);
+
+  difference(cap);
+  difference_background_1(cap);
+  difference_background_2(cap);
 
   return EXIT_SUCCESS;
 }
