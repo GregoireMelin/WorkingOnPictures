@@ -95,7 +95,6 @@ int main( int argc, char** argv )
       //Affichage de la frame courante avec les features pointees
       imshow("tracking", frame);
       cout << "Number of tracked features " << size << endl;
-
-      //waitKey(); //Passage a la frame suivante
+      waitKey(); //Passage a la frame suivante
     }
 }

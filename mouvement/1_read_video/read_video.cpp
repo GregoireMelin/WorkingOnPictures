@@ -50,8 +50,6 @@ int main( int argc, char* argv[] )
     trackbarPosition = trackbarPosition + 1;
     currentFrame=currentFrame+1;
     cap >> frame;
-
-
     if(!frame.data)
       break;
 
