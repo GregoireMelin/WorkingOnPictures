@@ -40,8 +40,15 @@ void difference(VideoCapture cap)
     //Faire la difference des images pixel a pixel
     difference = frame - frame2;
     cvtColor(difference, difference, CV_BGR2GRAY);
-    //Seuillage
+
+    //Seuillage : Parametre modifiable
+
     threshold(difference, difference, 50, 255, 0);
+    //threshold(difference, difference, 60, 255, 0); // --> OK : Balle perceptible
+    //threshold(difference, difference, 90, 255, 0); // --> Non : Une partie de la balle n'est plus visible
+    //threshold(difference, difference, 20, 255, 0); --> OK : Balle perceptible
+    //threshold(difference, difference, 0, 255, 0); --> Bruit
+
 
     //Affichage
     imshow("video",difference);
@@ -70,6 +77,7 @@ void difference_background_1(VideoCapture cap)
 
     cvtColor(frame, frame, CV_BGR2GRAY);
     cvtColor(frame2, frame2, CV_BGR2GRAY);
+
     BackgroundSubtractorMOG2 BGModel;
     BGModel(frame2, background, -1);
     difference = frame - background;
@@ -116,8 +124,10 @@ int main( int argc, char* argv[] )
   else
     cap.open(0);
 
-  difference(cap);
-  difference_background_1(cap);
+
+  //TODO :
+  //difference(cap);
+  //difference_background_1(cap);
   difference_background_2(cap);
 
   return EXIT_SUCCESS;
