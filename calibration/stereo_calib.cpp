@@ -18,8 +18,8 @@
      Homepage:      http://opencv.org
      Online docs:   http://docs.opencv.org
      Q&A forum:     http://answers.opencv.org
-     Issue tracker: http://code.opencv.org
      GitHub:        https://github.com/Itseez/opencv/
+     Issue tracker: http://code.opencv.org
    ************************************************** */
 
 #include "opencv2/calib3d/calib3d.hpp"
@@ -47,8 +47,6 @@ StereoCalib(const vector<string>& imagelist, Size boardSize, float squareSize)
         return;
     }
 
-
-
     vector<vector<Point2f> > imagePoints[2];
     vector<vector<Point3f> > objectPoints;
     Size imageSize;
@@ -64,37 +62,34 @@ StereoCalib(const vector<string>& imagelist, Size boardSize, float squareSize)
         for( k = 0; k < 2; k++ )
         {
             const string& filename = imagelist[i*2+k];
-	    cout << filename << endl;
+	          cout << filename << endl;
             Mat img = imread(filename, 0);
             if(img.empty())
                 break;
-	    cout << "The image " << filename <<endl;            
-	    if( imageSize == Size() )
-	      imageSize = img.size();
-	    
+	          cout << "The image " << filename <<endl;
+	          if( imageSize == Size() )
+	             imageSize = img.size();
             else if( img.size() != imageSize )
             {
-	      cout << " has the size different from the first image size. Skipping the pair\n";
+	              cout << " has the size different from the first image size. Skipping the pair\n";
                 break;
             }
+
             vector<Point2f>& corners = imagePoints[k][j];
-	    bool found = findChessboardCorners(img, boardSize, corners,
-					       CV_CALIB_CB_ADAPTIVE_THRESH | 
-					       CV_CALIB_CB_NORMALIZE_IMAGE);
-	    if( found ) {
-	 
-	      cout << filename << endl;
-	      Mat cimg;
-	       cvtColor(img, cimg, CV_GRAY2BGR);
-	       cornerSubPix(img, corners, Size(11,11), Size(-1,-1),
-			    TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,
-					 30, 0.01));
-	       drawChessboardCorners(cimg, boardSize, corners, found);
-	       imshow("corners", cimg);
-	       waitKey();
-	    }
-	    else
-	      break;
+	          bool found = findChessboardCorners(img, boardSize, corners,CV_CALIB_CB_ADAPTIVE_THRESH |CV_CALIB_CB_NORMALIZE_IMAGE);
+	          if( found )
+            {
+	             cout << filename << endl;
+	             Mat cimg;
+	             cvtColor(img, cimg, CV_GRAY2BGR);
+	             cornerSubPix(img, corners, Size(11,11), Size(-1,-1),
+			         TermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS,30, 0.01));
+	             drawChessboardCorners(cimg, boardSize, corners, found);
+	             imshow("corners", cimg);
+	             waitKey();
+	          }
+	          else
+	           break;
         }
         if( k == 2 )
         {
@@ -103,8 +98,10 @@ StereoCalib(const vector<string>& imagelist, Size boardSize, float squareSize)
             j++;
         }
     }
+
     cout << j << " pairs have been successfully detected.\n";
     nimages = j;
+
     if( nimages < 2 )
     {
         cout << "Error: too little pairs to run the calibration\n";
@@ -175,7 +172,7 @@ StereoCalib(const vector<string>& imagelist, Size boardSize, float squareSize)
     bool isVerticalStereo = fabs(P2.at<double>(1, 3)) > fabs(P2.at<double>(0, 3));
 
     // COMPUTE AND DISPLAY RECTIFICATION
-    
+
     Mat rmap[2][2];
 
     //Precompute maps for cv::remap()
@@ -250,17 +247,11 @@ int main(int argc, char** argv)
   boardSize.width=9;
   boardSize.height=6;
   float squareSize=2.5;
-    string imagelistfn;
-
-
-    vector<string> imagelist;
-    bool ok = readStringList(imageList, imagelist);
-    if(!ok || imagelist.empty())
-    {
-        cout << "can not open " << imagelistfn << " or the string list is empty" << endl;
-    }
-
-    StereoCalib(imagelist, boardSize, squareSize);
-    return 0;
+  string imagelistfn;
+  vector<string> imagelist;
+  bool ok = readStringList(imageList, imagelist);
+  if(!ok || imagelist.empty())
+      cout << "can not open " << imagelistfn << " or the string list is empty" << endl;
+  StereoCalib(imagelist, boardSize, squareSize);
+  return 0;
 }
-
