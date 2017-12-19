@@ -1,5 +1,6 @@
 
 /* Calibration */
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
@@ -12,12 +13,15 @@ using namespace cv;
 #include <algorithm>
 using namespace std;
 
+
+
+
 // Print camera parameters to the output file
 static void saveCameraParams( string outputFileName,
 			      Size imageSize,
 			      Size  boardSize, float squareSize,  Mat& cameraMatrix, Mat& distCoeffs,
-            const vector<Mat>& rvecs, const vector<Mat>& tvecs,
-            const vector<float>& reprojErrs, const vector<vector<Point2f> >& imagePoints)
+                              const vector<Mat>& rvecs, const vector<Mat>& tvecs,
+                              const vector<float>& reprojErrs, const vector<vector<Point2f> >& imagePoints)
 {
   FileStorage fs( outputFileName, FileStorage::WRITE );
 
@@ -43,7 +47,7 @@ static void saveCameraParams( string outputFileName,
 
 
   if( !reprojErrs.empty() )
-    fs << "per_V_reprojection_errors" << Mat(reprojErrs);
+    fs << "per_view_reprojection_errors" << Mat(reprojErrs);
 
   if( !rvecs.empty() && !tvecs.empty() )
     {
@@ -60,7 +64,7 @@ static void saveCameraParams( string outputFileName,
 				  r = rvecs[i].t();
 				  t = tvecs[i].t();
         }
-      cvWriteComment( *fs, "a set of 6-tuples (rotation vector + translation vector) for each V", 0 );
+      cvWriteComment( *fs, "a set of 6-tuples (rotation vector + translation vector) for each view", 0 );
       fs << "extrinsic_parameters" << bigmat;
     }
 
@@ -76,6 +80,11 @@ static void saveCameraParams( string outputFileName,
       fs << "image_points" << imagePtMat;
     }
 }
+
+
+
+
+
 
 static bool readStringList( const string& filename, vector<string>& l )
 {
@@ -98,8 +107,7 @@ vector<vector<Point2f> > imagePoints;
 Mat cameraMatrix, distCoeffs;
 
 /** @function main */
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 
 	 std::cout << " Usage: ./calibrate <calib_list.xml>  <image_list.xml> or: ./calibrate <calib_list.xml>   " << argc << std::endl;
 
@@ -123,6 +131,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+
   Size boardSize, imageSize;
   boardSize.width = 9;
   boardSize.height = 6;
@@ -130,95 +139,112 @@ int main(int argc, char* argv[])
 
   for(int i = 0; i < nframes; i++)
 	{
+
     cout << "image " << i << endl;
     Mat im = imread(calibList[i], 1); //1 pour charger en RGB
+
     //-----  If no more image, or got enough, then stop calibration and show result -------------
     if(!im.empty())
-    {
-			imageSize = im.size();
-			// ---- Compute Chessboard Corners ---- //
-			vector<Point2f> pointBuf;
-			//.............................
-			bool found = findChessboardCorners(im, boardSize, pointBuf);
+     {
+		imageSize = im.size();
 
-			if (found && pointBuf.size()>0)
-			{
-				Mat imGray;
-				cvtColor(im, imGray, CV_BGR2GRAY);
-				// ----  improve the found corners' coordinate accuracy for chessboard---- //
-				cornerSubPix( imGray, pointBuf, Size(11,11),Size(-1,-1), TermCriteria( CV_TERMCRIT_EPS+CV_TERMCRIT_ITER,30, 0.1));
-				// ---- Draw the corners  ---- //
-				drawChessboardCorners( im, boardSize, Mat(pointBuf), found);
-				// --- Show image ---- //
-				imshow("Image ", im);
+		// ---- Compute Chessboard Corners ---- //
+		vector<Point2f> pointBuf;
+		//.............................
+		bool found = findChessboardCorners(im, boardSize, pointBuf);
+
+		if (found && pointBuf.size()>0)
+		{ // If done with success,
+			Mat imGray;
+			cvtColor(im, imGray, CV_BGR2GRAY);
+
+		  // ----  improve the found corners' coordinate accuracy for chessboard---- //
+			cornerSubPix( imGray, pointBuf, Size(11,11),Size(-1,-1), TermCriteria( CV_TERMCRIT_EPS+CV_TERMCRIT_ITER,30, 0.1));
+
+			// ---- Draw the corners  ---- //
+			drawChessboardCorners( im, boardSize, Mat(pointBuf), found);
+
+		  	// --- Show image ---- //
+		  	imshow("Image ", im);
+		  	cv::waitKey();
+		  	//on garde en mémoire la localisation des corners
 		  	imagePoints.push_back(pointBuf);
-				cv::waitKey();
-			}
 		}
+      }
   }
 
-  if (imagePoints.size() > 0)
-	{
+  if (imagePoints.size() > 0) {
+    // ---- Calibrate the camera --- //
+    // ---- Compute Object Points --- //
     vector<vector<Point3f> > objectPoints(1);
+
     for(int i = 0; i < boardSize.height; ++i)
-		{
+    {
       	for(int j = 0; j < boardSize.width; ++j)
-				{
-					objectPoints[0].push_back(Point3f(float( j*squareSize ), float( i*squareSize ), 0));
-				}
-				objectPoints.resize(imagePoints.size(),objectPoints[0]);
-		}
+      	{
+			objectPoints[0].push_back(Point3f(float( j*squareSize ), float( i*squareSize ), 0));
+	  	}
+	}
+
+    objectPoints.resize(imagePoints.size(),objectPoints[0]);
+
     vector<Mat> rvecs, tvecs;
     vector<float> reprojErrs;
+
     // ---- Find intrinsic and extrinsic camera parameters ---- //
     cameraMatrix = Mat::eye(3, 3, CV_64F);
     distCoeffs = Mat::zeros(8, 1, CV_64F);
-    calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs, rvecs, tvecs);
+
+    //.............................
+    //sert pour la distortion
+    double rms = calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs, rvecs, tvecs);
+
     bool ok = checkRange(cameraMatrix) && checkRange(distCoeffs);
     cout << (ok ? "Calibration succeeded" : "Calibration failed")  << endl ;
+
+
+
     // ---- If calibration succeeded save camera parameters ---- //
     if(ok)
-		{
       saveCameraParams(output,  imageSize, boardSize, squareSize,  cameraMatrix, distCoeffs, rvecs ,tvecs, reprojErrs,imagePoints);
-		}
+
   }
 
-  	cout<<"calibration done"<< endl;
-  	if (argc > 2)
-		{
+  cout<<"calibration done"<< endl;
+  if (argc > 2) {
 
-    	//---- RECTIFICATION (QUESTION 2) Undistort images from camera calibration parameter ----- //
-    	const char* imageFilename = argv[2];
-    	vector<string> imageList;
-    	cout << imageFilename << endl;
-    	readStringList(imageFilename, imageList);
-    	nframes = 0;
-    	if(!imageList.empty())
-			{
-      	nframes = (int)imageList.size();
-      	cout<< nframes <<  " images" << endl;
-    	}
-    	else
-			{
-      	cout <<  "No images" << endl;
-      	return 1;
-    	}
+    //---- RECTIFICATION (QUESTION 2) Undistort images from camera calibration parameter ----- //
+    const char* imageFilename = argv[2];
+    vector<string> imageList;
+    cout << imageFilename << endl;
+    readStringList(imageFilename, imageList);
+    nframes = 0;
+    if(!imageList.empty()) {
+      nframes = (int)imageList.size();
+      cout<< nframes <<  " images" << endl;
+    }
+    else {
+      cout <<  "No images" << endl;
+      return 1;
+    }
 
-    	//.............................
-    	Mat V, final_V;
+    //.............................
+    Mat view, finaleView;
 
-    	for(int i = 0; i < (int)imageList.size(); i++)
-    	{
-    		V = imread(imageList[i], 1);
-    		if(V.empty())
-    			continue;
+    for(int i = 0; i < (int)imageList.size(); i++)
+    {
+    	view = imread(imageList[i], 1);
+    	if(view.empty())
+    		continue;
 
-    		imageSize = V.size();
+    	imageSize = view.size();
 
-    		undistort(V, final_V, cameraMatrix, distCoeffs);
-    		imshow("Image V", final_V);
-   			waitKey(0);
-    	}
-  	}
-  	return 0;
+    	undistort(view, finaleView, cameraMatrix, distCoeffs);
+    	imshow("Image view", finaleView);
+   		waitKey(0);
+    }
+
+  }
+
+  return 0;
 }
