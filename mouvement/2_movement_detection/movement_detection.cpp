@@ -56,6 +56,7 @@ void difference(VideoCapture cap)
       break;
   }
 }
+//Difference de fond
 void difference_background_1(VideoCapture cap)
 {
   Mat difference, frame, frame2;
@@ -89,6 +90,7 @@ void difference_background_1(VideoCapture cap)
 
   }
 }
+//Difference de fond avec melange de gaussienne
 void difference_background_2(VideoCapture cap)
 {
   int nbFrame = int(cap.get(CV_CAP_PROP_FRAME_COUNT));
