@@ -1,6 +1,6 @@
 
 Sur la première image d’une séquence vidéo, on repère les points d'intérêts de l’objet à suivre.
-Les points d'intérêts d’un objet dans une image représentent les points pour lesquels une double discontinuité de l’intensité st observable, cette double discontinuité correspondant à des coins. Il existe plusieurs méthode permettant de détecter ces points d'intérêt. Une méthode rapide, connue et mise en oeuvre au cours des travaux dirigés d’imagerie numérique est la mise en place d'un détecteur de Harris.
+Les points d'intérêts d’un objet dans une image représentent les points pour lesquels une double discontinuité de l’intensité st observable, cette double discontinuité correspondant à des coins. Il existe plusieurs méthode permettant de détecter ces points d'intérêt. Une méthode rapide, connue et mise en oeuvre au cours des travaux dirigés de vision par ordinateur est la mise en place d'un détecteur de Harris.
 
 Après avoir repéré ces points d'intérêts sur la première image de la séquence, le but de la méthode est de retrouver ces points sur l’image suivante. Puis ,à son tour, cette dernière image servira de base à la recherche de ces mêmes points d'intérêts sur l’image suivante et ainsi de suite sur toute la séquence vidéo.
 

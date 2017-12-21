@@ -57,7 +57,7 @@ void difference(VideoCapture cap)
   }
 }
 //Difference de fond
-void difference_background_1(VideoCapture cap)
+void difference_background(VideoCapture cap)
 {
   Mat difference, frame, frame2;
   Mat background;
@@ -91,7 +91,7 @@ void difference_background_1(VideoCapture cap)
   }
 }
 //Difference de fond avec melange de gaussienne
-void difference_background_2(VideoCapture cap)
+void difference_back_MOG(VideoCapture cap)
 {
   int nbFrame = int(cap.get(CV_CAP_PROP_FRAME_COUNT));
   Mat difference, frame, frame2,background3;
@@ -104,8 +104,8 @@ void difference_background_2(VideoCapture cap)
     cap >> frame2;
     if(!frame.data || !frame.data)
       break;
-    //cvtColor(frame, frame, CV_BGR2GRAY);
-    //cvtColor(frame2, frame2, CV_BGR2GRAY);
+    cvtColor(frame, frame, CV_BGR2GRAY);
+    cvtColor(frame2, frame2, CV_BGR2GRAY);
     BackgroundSubtractor BGModel2;
     BGModel2(frame2, background3, -1);
     difference = frame - background3;
@@ -126,11 +126,11 @@ int main( int argc, char* argv[] )
   else
     cap.open(0);
 
-
   //TODO :
   //difference(cap);
-  //difference_background_1(cap);
-  difference_background_2(cap);
+  difference_background(cap);
+  //difference_back_MOG(cap);
 
   return EXIT_SUCCESS;
 }
+

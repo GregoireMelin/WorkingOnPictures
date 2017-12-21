@@ -1,9 +1,11 @@
 PARTIE 1.1 :
+
 La variable 'boardSize' correspond à la taille de l'échiquier pris en photo. 
 La variable 'cameraMatrix' contient les distances focales et les centres optiques de la caméra utilisée.
 Enfin, la variable 'distortion' contient les paramètres k1, k2, p1, p2, et k3.
 
 PARTIE 1.2 :
+
 - On constate que la quasi-totalité des images sont rectifiées par l'algorithme.
 
 
